@@ -1,3 +1,4 @@
+# imports
 import random, pygame
 import particle_physics as pp
 from pygame import time
@@ -5,19 +6,22 @@ from particle_physics import *
 
 
 
-# Define some colors
+# define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREY = (125, 125, 125)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
+# define variables/constants
+particle_start_ammount = 100
 Delta_T = 100
 particles_list = []
 particles_attributes = {}
 j = 1
 
-for i in range(1, 3001):
+# particle creation
+for i in range(1, particle_start_ammount + 1):
     random_pos_x, random_pos_y, random_velocity_x, random_velocity_y = random.randint(100, 1400), random.randint(100, 650), random.random(), random.random()
     velocity_negator_x, velocity_negator_y = random.randint(-1, 1), random.randint(-1, 1)
     if velocity_negator_x == -1:
@@ -40,23 +44,28 @@ for i in range(1, 3001):
 
     j += 1
 
-
+# pygame initialisation
 pygame.init()
 pygame.font.init()
 
+# font
 font = pygame.font.SysFont("Arial", 18)
 
 
+# fps counter
 def fps_counter():
     fps = str(round(float(clock.get_fps()), 2))
     fps_text = font.render(fps, 1, pygame.Color("green"))
     return fps_text
 
+
+# particle counter
 def particle_count():
     particle_num = str(len(particles_list))
     particle_num_text = font.render(particle_num, 1, pygame.Color("blue"))
     return particle_num_text
  
+
 # Set the width and height of the screen [width, height]
 size = (1500, 750)
 screen = pygame.display.set_mode(size)
@@ -79,6 +88,7 @@ while not done:
 
     # --- Game logic should go here'
 
+        # spawn particle on RMB click/drag
         mouse_presses = pygame.mouse.get_pressed()
  
         if mouse_presses[2]:
@@ -123,16 +133,18 @@ while not done:
     # --- Drawing code should go here
  
 
-
+    # Delta_T calculation for physics
     fps =  float(clock.get_fps())
     if fps == 0:
-        fps = 60
+        fps = Delta_T
     time_factor = Delta_T / fps
 
+    # physics and display update loop for each particle
     for particle in particles_list:
         particle.update_physics(time_factor, particles_attributes)
         particle.update_screen(screen, BLACK)
 
+    # fps and particle counter update
     screen.blit(fps_counter(), (10, 0))
     screen.blit(particle_count(), (10, 20))
 
