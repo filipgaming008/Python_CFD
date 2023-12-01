@@ -4,8 +4,6 @@ import particle_physics as pp
 from pygame import time
 from particle_physics import *
 
-
-
 # define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -14,8 +12,8 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
 # define variables/constants
-particle_start_ammount = 100
-Delta_T = 100
+particle_start_ammount = 0
+Delta_T = 5
 particles_list = []
 particles_attributes = {}
 j = 1
@@ -35,8 +33,7 @@ for i in range(1, particle_start_ammount + 1):
     particles_attributes.update({f"{particle_name}" : {
     "position_x" : f"{random_pos_x}",
     "position_y" : f"{random_pos_y}",
-    "velocity_x" : f"{random_velocity_x}",
-    "velocity_y" : f"{random_velocity_y}"
+    "mass" : f"{random_mass}"
 }})
 
     particles_def = particle_phyisics(particle_name, random_pos_x, random_pos_y, random_velocity_x, random_velocity_y, mass = random_mass)
@@ -111,8 +108,7 @@ while not done:
             particles_attributes.update({f"{particle_name}" : {
             "position_x" : f"{random_pos_x}",
             "position_y" : f"{random_pos_y}",
-            "velocity_x" : f"{random_velocity_x}",
-            "velocity_y" : f"{random_velocity_y}"
+            "mass" : f"{random_mass}"
         }})
 
             particles_def = particle_phyisics(particle_name, random_pos_x, random_pos_y, random_velocity_x, random_velocity_y, mass = random_mass)
@@ -141,7 +137,7 @@ while not done:
 
     # physics and display update loop for each particle
     for particle in particles_list:
-        particle.update_physics(time_factor, particles_attributes)
+        new_particle_attributes = particle.update_physics(time_factor, particles_attributes)
         particle.update_screen(screen, BLACK)
 
     # fps and particle counter update

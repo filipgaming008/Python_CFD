@@ -1,14 +1,9 @@
 # imports
-import pygame
+from turtle import position
+import pygame, math
 from vector_operations import vector_operation as VOp
 
 # constants
-attraction_radius = 1500
-reppeling_radius = 3
-
-attracting_strength = 1
-reppeling_strength = 2
-
 world_gravity = [0, -0.05]
 
 world_friction = [0.0025, 0.0025]
@@ -32,6 +27,7 @@ class particle_phyisics():
     # physics update
     def update_physics(self, Delta_T, particles_attributes):
 
+        new_particle_attributes = particles_attributes
 
         # Delta_T
         Delta_T = [Delta_T, Delta_T]
@@ -39,7 +35,35 @@ class particle_phyisics():
 
         # collisions update
         def collisions(particles_attributes):
-            pass
+            for particle in particles_attributes:
+                
+                target_particle_position = [float(particles_attributes[particle]["position_x"]), float(particles_attributes[particle]["position_y"])]
+
+                G = 66.7408
+
+                direction = VOp.sub(target_particle_position, self.position)
+
+                direction = VOp.cart2pol(direction)
+
+                distance = direction[0]
+
+                if (self.position != target_particle_position) and (distance > 8):
+
+                    # print("Dist ", distance)
+
+                    acceleration = G / (distance * distance)
+
+                    # print("Accel ", acceleration)
+
+                    direction = [acceleration, direction[1]]
+
+                    direction = VOp.pol2cart(direction)
+
+                    self.acceleration = VOp.add(direction, self.acceleration)
+
+
+            return(new_particle_attributes)             
+
 
         # friction update
         def friction():
@@ -63,15 +87,24 @@ class particle_phyisics():
             
         
         # function calls
-        wall_bounce()
-        gravity()
+        # gravity()
         friction()
+        wall_bounce()
+        new_particle_attributes = collisions(particles_attributes)
 
 
         # position update of particle
         self.velocity = VOp.sub(self.velocity, VOp.mult(self.acceleration, Delta_T))
         self.position = VOp.add(self.position, VOp.mult(self.velocity, Delta_T))
+        self.acceleration = [0, 0]
 
+        new_particle_attributes.update({f"{self.particle_name}" : {
+            "position_x" : f"{self.position[0]}",
+            "position_y" : f"{self.position[1]}",
+            "mass" : f"{self.mass[0]}"
+        }})
+
+        return(new_particle_attributes)
 
     # display update
     def update_screen(self, screen, particle_color):
